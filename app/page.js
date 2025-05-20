@@ -165,19 +165,23 @@ export default function Home() {
     <div className={`min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br ${getBackgroundStyle()} transition-all duration-500`}>
       <ToastContainer position="top-right" autoClose={3000} />
       <nav className="w-full max-w-xl mb-6 flex justify-between items-center text-white">
-        <h1 className="text-2xl font-bold">🌤️ WeatherApp</h1>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={toggleDarkMode}
-            className="text-2xl hover:opacity-80 transition-opacity"
-          >
-            {isDarkMode ? '🌞' : '🌙'}
-          </button>
-          <Link href="/about" className="text-sm underline hover:text-white/80 transition-colors">
-            About
-          </Link>
-        </div>
-      </nav>
+  <h1 className="text-2xl font-bold">🌤️ WeatherApp</h1>
+  <div className="flex items-center gap-4">
+    <button
+      onClick={toggleDarkMode}
+      className="text-2xl hover:opacity-80 transition-opacity"
+    >
+      {isDarkMode ? '🌞' : '🌙'}
+    </button>
+    <Link
+      href="/about"
+      className="text-sm font-extrabold hover:text-white/80 transition-colors"
+    >
+      About
+    </Link>
+  </div>
+</nav>
+
 
       <div className="w-full max-w-xl px-4 space-y-6">
         <header className="text-center space-y-2">
@@ -278,7 +282,7 @@ function SearchBar({ query, setQuery, fetchWeather, showHistory, setShowHistory,
                   setTimeout(() => fetchWeather(null, null, entry.city), 0);
                 }}
 
-                className="w-full px-4 py-2 text-left text-white hover:bg-gray-100 rounded-xl transition-colors flex justify-between items-center"
+className="w-full px-4 py-2 text-left text-white hover:bg-gray-100 hover:text-blue-600 rounded-xl transition-colors flex justify-between items-center"
               >
                 <span>{entry.city}</span>
                 <span className="text-xs text-gray-400">
