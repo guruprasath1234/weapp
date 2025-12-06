@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Script from "next/script";
+import Image from "next/image"; // Added for optimized images
 
 import { useEffect, useState, useCallback } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -18,11 +19,33 @@ export default function Home() {
   const [unit, setUnit] = useState("metric");
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-
-
   const API_KEY = "a58ede03533fc91eae362e91092f17c5";
 
+  // Memoize fetchWeather to fix useEffect dependency warning
+  const fetchWeather = useCallback(
+    async (lat, lon, cityName = "") => {
+      setLoading(true);
+      try {
+        const url = cityName
+          ? `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=${unit}`
+          : `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${unit}`;
 
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.cod === 200) {
+          handleSuccessfulFetch(data);
+        } else {
+          throw new Error(data.message || "Unable to fetch weather data");
+        }
+      } catch (err) {
+        handleFetchError(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [API_KEY, unit, history] // include dependencies
+  );
 
   useEffect(() => {
     const getLocation = async () => {
@@ -49,7 +72,7 @@ export default function Home() {
     };
 
     getLocation();
-  }, []);
+  }, [fetchWeather]); // add fetchWeather as dependency
 
   useEffect(() => {
     const savedHistory = JSON.parse(localStorage.getItem("weatherHistory")) || [];
@@ -63,28 +86,6 @@ export default function Home() {
       3: "Location request timed out."
     };
     setError(errors[error.code] || "Unable to retrieve your location.");
-  };
-
-  const fetchWeather = async (lat, lon, cityName = "") => {
-    setLoading(true);
-    try {
-      const url = cityName
-        ? `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=${unit}`
-        : `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${unit}`;
-
-      const res = await fetch(url);
-      const data = await res.json();
-
-      if (data.cod === 200) {
-        handleSuccessfulFetch(data);
-      } else {
-        throw new Error(data.message || "Unable to fetch weather data");
-      }
-    } catch (err) {
-      handleFetchError(err);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleSuccessfulFetch = (data) => {
@@ -320,10 +321,14 @@ function WeatherCard({ weather, city, unit }) {
             {weather.weather[0].description}
           </p>
         </div>
-        <img
+        {/* Use Next.js Image for weather icon */}
+        <Image
           src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@4x.png`}
           alt={weather.weather[0].description}
+          width={96}
+          height={96}
           className="w-24 h-24 animate-float"
+          priority
         />
       </div>
 
