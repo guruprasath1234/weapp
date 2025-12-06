@@ -21,6 +21,35 @@ export default function Home() {
 
   const API_KEY = "a58ede03533fc91eae362e91092f17c5";
 
+  // Move updateSearchHistory first
+  const updateSearchHistory = useCallback((cityName) => {
+    setHistory(prevHistory => {
+      const updatedHistory = [
+        { city: cityName, timestamp: Date.now() },
+        ...prevHistory.filter((entry) => entry.city !== cityName)
+      ].slice(0, 5);
+      localStorage.setItem("weatherHistory", JSON.stringify(updatedHistory));
+      return updatedHistory;
+    });
+  }, []);
+
+  // Now handleSuccessfulFetch can depend on updateSearchHistory
+  const handleSuccessfulFetch = useCallback((data) => {
+    setWeather(data);
+    setCity(data.name);
+    setQuery("");
+    updateSearchHistory(data.name);
+    toast.success(`Weather data for ${data.name} loaded!`);
+  }, [updateSearchHistory]);
+
+  const handleFetchError = useCallback((err) => {
+    const errorMessage = err.message.includes("404")
+      ? "City not found. Please check the spelling."
+      : err.message;
+    setError(errorMessage);
+    toast.error(errorMessage);
+  }, []);
+
   // Memoize fetchWeather to fix useEffect dependency warning
   const fetchWeather = useCallback(
     async (lat, lon, cityName = "") => {
@@ -44,7 +73,7 @@ export default function Home() {
         setLoading(false);
       }
     },
-    [API_KEY, unit, history] // include dependencies
+    [API_KEY, unit, handleSuccessfulFetch, handleFetchError]
   );
 
   useEffect(() => {
@@ -86,32 +115,6 @@ export default function Home() {
       3: "Location request timed out."
     };
     setError(errors[error.code] || "Unable to retrieve your location.");
-  };
-
-  const handleSuccessfulFetch = (data) => {
-    setWeather(data);
-    setCity(data.name);
-    setQuery("");
-    updateSearchHistory(data.name);
-    toast.success(`Weather data for ${data.name} loaded!`);
-  };
-
-  const updateSearchHistory = (cityName) => {
-    const updatedHistory = [
-      { city: cityName, timestamp: Date.now() },
-      ...history.filter((entry) => entry.city !== cityName)
-    ].slice(0, 5);
-
-    setHistory(updatedHistory);
-    localStorage.setItem("weatherHistory", JSON.stringify(updatedHistory));
-  };
-
-  const handleFetchError = (err) => {
-    const errorMessage = err.message.includes("404")
-      ? "City not found. Please check the spelling."
-      : err.message;
-    setError(errorMessage);
-    toast.error(errorMessage);
   };
 
   const toggleUnit = () => {
