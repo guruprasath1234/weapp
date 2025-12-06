@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Script from "next/script";
 
 import { useEffect, useState, useCallback } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -161,8 +162,14 @@ export default function Home() {
 
 
   return (
+    <>
+      <Script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2442937298192234"
+        crossOrigin="anonymous"
+      />
 
-    <div className={`min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br ${getBackgroundStyle()} transition-all duration-500`}>
+      <div className={`min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br ${getBackgroundStyle()} transition-all duration-500`}>
       <ToastContainer position="top-right" autoClose={3000} />
       <nav className="w-full max-w-xl mb-6 flex justify-between items-center text-white">
   <h1 className="text-2xl font-bold">🌤️ WeatherApp</h1>
@@ -185,8 +192,7 @@ export default function Home() {
 
       <div className="w-full max-w-xl px-4 space-y-6">
         <header className="text-center space-y-2">
-          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2442937298192234"
-     crossorigin="anonymous"></script>
+        
           <h1 className="text-4xl font-bold text-white drop-shadow-md animate-fade-in-down">
             Weather Dashboard
           </h1>
@@ -221,9 +227,9 @@ export default function Home() {
             <WeatherCard weather={weather} city={city} unit={unit} />
           </Link>
         ) : null}
-
       </div>
     </div>
+    </>
   );
 }
 
