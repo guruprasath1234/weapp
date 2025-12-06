@@ -104,8 +104,20 @@ export default function Home() {
   }, [fetchWeather]); // add fetchWeather as dependency
 
   useEffect(() => {
-    const savedHistory = JSON.parse(localStorage.getItem("weatherHistory")) || [];
-    setHistory(savedHistory);
+    if (typeof window !== "undefined") {
+      const savedHistory = JSON.parse(localStorage.getItem("weatherHistory")) || [];
+      setHistory(savedHistory);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedMode = localStorage.getItem('darkMode') === 'true';
+      setIsDarkMode(savedMode);
+      if (savedMode) {
+        document.documentElement.classList.add('dark');
+      }
+    }
   }, []);
 
   const handleGeolocationError = (error) => {
@@ -145,24 +157,24 @@ export default function Home() {
   };
 
   // Update background style calculation
-  const getBackgroundStyle = useCallback(() => {
-    if (isDarkMode) {
-      if (!weather) return "from-gray-800 to-gray-900";
-      const temp = weather?.main?.temp;
-      if (temp > 30) return "from-gray-800 to-gray-900";
-      if (temp > 20) return "from-gray-800 to-gray-900";
-      if (temp > 10) return "from-gray-800 to-gray-900";
-      return "from-cyan-800 to-blue-900 via-cyan-700";
-    } else {
-      // Existing light mode logic
-      if (!weather) return "from-sky-200 to-blue-400";
-      const temp = weather?.main?.temp;
-      if (temp > 30) return "from-sky-200 to-blue-400";
-      if (temp > 20) return "from-sky-200 to-blue-400";
-      if (temp > 10) return "from-sky-300 to-blue-400";
-      return "from-cyan-200 to-blue-300 via-cyan-100";
-    }
-  }, [weather, isDarkMode]);
+const getBackgroundStyle = () => {
+  if (isDarkMode) {
+    if (!weather) return "from-gray-800 to-gray-900";
+    const temp = weather?.main?.temp;
+    if (temp > 30) return "from-gray-800 to-gray-900";
+    if (temp > 20) return "from-gray-800 to-gray-900";
+    if (temp > 10) return "from-gray-800 to-gray-900";
+    return "from-cyan-800 to-blue-900 via-cyan-700";
+  } else {
+    if (!weather) return "from-sky-200 to-blue-400";
+    const temp = weather?.main?.temp;
+    if (temp > 30) return "from-sky-200 to-blue-400";
+    if (temp > 20) return "from-sky-200 to-blue-400";
+    if (temp > 10) return "from-sky-300 to-blue-400";
+    return "from-cyan-200 to-blue-300 via-cyan-100";
+  }
+};
+
 
 
   return (
