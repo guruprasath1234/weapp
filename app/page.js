@@ -185,6 +185,8 @@ export default function Home() {
 
       <div className="w-full max-w-xl px-4 space-y-6">
         <header className="text-center space-y-2">
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2442937298192234"
+     crossorigin="anonymous"></script>
           <h1 className="text-4xl font-bold text-white drop-shadow-md animate-fade-in-down">
             Weather Dashboard
           </h1>
