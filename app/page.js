@@ -21,19 +21,21 @@ export default function Home() {
 
   const API_KEY = "a58ede03533fc91eae362e91092f17c5";
 
-  // Move updateSearchHistory first
+  // Stable updateSearchHistory, does not depend on history
   const updateSearchHistory = useCallback((cityName) => {
     setHistory(prevHistory => {
       const updatedHistory = [
         { city: cityName, timestamp: Date.now() },
         ...prevHistory.filter((entry) => entry.city !== cityName)
       ].slice(0, 5);
-      localStorage.setItem("weatherHistory", JSON.stringify(updatedHistory));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("weatherHistory", JSON.stringify(updatedHistory));
+      }
       return updatedHistory;
     });
   }, []);
 
-  // Now handleSuccessfulFetch can depend on updateSearchHistory
+  // Stable handleSuccessfulFetch, only depends on updateSearchHistory
   const handleSuccessfulFetch = useCallback((data) => {
     setWeather(data);
     setCity(data.name);
@@ -73,7 +75,7 @@ export default function Home() {
         setLoading(false);
       }
     },
-    [API_KEY, unit, handleSuccessfulFetch, handleFetchError]
+    [API_KEY, unit, handleSuccessfulFetch, handleFetchError] // correct dependencies
   );
 
   useEffect(() => {
